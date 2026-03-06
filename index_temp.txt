@@ -1,0 +1,166 @@
+﻿// ===== INTERACTIVE MAP FUNCTIONALITY =====
+let map = null;
+let marker = null;
+let geocoder = null;
+let currentMapField = null; // 'pickup' or 'destination'
+let selectedLocation = null;
+
+function initMap(lat = 12.9716, lng = 77.5946) { // Default: Bangalore
+    if (typeof google === 'undefined' || !google.maps) {
+        console.error('Google Maps API not loaded');
+        return;
+    }
+
+    const mapOptions = {
+        center: { lat, lng },
+        zoom: 15,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true,
+        zoomControl: true,
+        styles: [
+            {
+                featureType: 'poi',
+                elementType: 'labels',
+                stylers: [{ visibility: 'on' }]
+            }
+        ]
+    };
+
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    geocoder = new google.maps.Geocoder();
+
+    // Create draggable marker
+    marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        title: 'Drag me to select location'
+    });
+
+    // Update location when marker is dragged
+    marker.addListener('dragend', () => {
+        const position = marker.getPosition();
+        updateSelectedLocation(position.lat(), position.lng());
+    });
+
+    // Update location when map is clicked
+    map.addListener('click', (event) => {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+        marker.setPosition(event.latLng);
+        updateSelectedLocation(lat, lng);
+    });
+
+    // Get initial address
+    updateSelectedLocation(lat, lng);
+}
+
+function updateSelectedLocation(lat, lng) {
+    selectedLocation = { lat, lng };
+
+    // Reverse geocode to get address
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+            const address = results[0].formatted_address;
+            document.getElementById('selectedAddressText').textContent = address;
+            selectedLocation.address = address;
+        } else {
+            document.getElementById('selectedAddressText').textContent = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+            selectedLocation.address = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
+    });
+}
+
+function openMapModal(fieldType) {
+    currentMapField = fieldType;
+    const modal = document.getElementById('mapModal');
+    const title = document.getElementById('mapModalTitle');
+
+    if (fieldType === 'pickup') {
+        title.textContent = 'Select Pickup Location on Map';
+    } else {
+        title.textContent = 'Select Destination on Map';
+    }
+
+    modal.classList.add('active');
+
+    // Initialize map if not already done
+    if (!map) {
+        // Try to get current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    initMap(position.coords.latitude, position.coords.longitude);
+                },
+                () => {
+                    // Fallback to Bangalore if geolocation fails
+                    initMap();
+                }
+            );
+        } else {
+            initMap();
+        }
+    } else {
+        // Resize map to fix display issues
+        google.maps.event.trigger(map, 'resize');
+    }
+}
+
+function closeMapModal() {
+    document.getElementById('mapModal').classList.remove('active');
+}
+
+function confirmMapSelection() {
+    if (selectedLocation && selectedLocation.address) {
+        const inputField = document.getElementById(currentMapField);
+        inputField.value = selectedLocation.address;
+        closeMapModal();
+    } else {
+        alert('Please select a location on the map');
+    }
+}
+
+// Map button event listeners
+document.getElementById('pickupMapBtn').addEventListener('click', () => {
+    openMapModal('pickup');
+});
+
+document.getElementById('destinationMapBtn').addEventListener('click', () => {
+    openMapModal('destination');
+});
+
+// Map modal controls
+document.getElementById('closeMapModal').addEventListener('click', closeMapModal);
+document.getElementById('cancelMapSelection').addEventListener('click', closeMapModal);
+document.getElementById('confirmMapSelection').addEventListener('click', confirmMapSelection);
+
+// Current location button
+document.getElementById('currentLocationBtn').addEventListener('click', () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const newPos = { lat, lng };
+                
+                map.setCenter(newPos);
+                marker.setPosition(newPos);
+                updateSelectedLocation(lat, lng);
+            },
+            () => {
+                alert('Unable to get your current location. Please check your browser permissions.');
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('mapModal').addEventListener('click', (e) => {
+    if (e.target.id === 'mapModal') {
+        closeMapModal();
+    }
+});

@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Compare live ride fares from Ola, Uber, Rapido, and Namma Yatri in India. Save time and money by finding the best ride option.">
+    <title>FAREXO - Compare Ride Fares from Ola, Uber, Rapido & Namma Yatri</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --rapido-red: #ef4444;
+            --ola-yellow: #fbbf24;
+            --uber-black: #000000;
+            --namma-green: #10b981;
+            /* RideCompare (screen 2) brand colors */
+            --rc-uber: #000000;
+            --rc-ola: #00A86B;
+            --rc-rapido: #FF6B35;
+            --rc-namma: #FFB800;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --rc-radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== PAGE 1: INPUT SCREEN ===== */
+        #inputPage {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #inputPage::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        #inputPage::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 15s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+
+        .input-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--gradient-end) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            display: block;
+            /* Removed flex */
+        }
+
+        .logo p {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 0;
+            /* Reset margin */
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* New: Location Button */
+        .location-btn {
+            width: 100%;
+            padding: 12px 16px;
+            margin-top: 8px;
+            background: white;
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            color: var(--primary-blue);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .location-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .location-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .location-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .vehicle-selector {
+            margin-bottom: 24px;
+        }
+
+        .vehicle-selector label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .vehicle-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 10px;
+        }
+
+        .vehicle-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .vehicle-btn:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .vehicle-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .compare-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .recent-searches {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .recent-searches h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .recent-item {
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recent-item:hover {
+            background: #e5e7eb;
+            transform: translateX(4px);
+        }
+
+        .recent-item-content {
+            flex: 1;
+        }
+
+        .recent-item-route {
+            font-size: 13px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .recent-item-vehicle {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .recent-item-delete {
+            padding: 6px 10px;
+            background: white;
+            border: none;
+            border-radius: 6px;
+            color: var(--rapido-red);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .recent-item-delete:hover {
+            background: var(--rapido-red);
+            color: white;
+        }
+
+        /* ===== PAGE 2: RESULTS SCREEN ===== */
+        #resultsPage {
+            display: none;
+            min-height: 100vh;
+            background: #ffffff;
+        }
+
+        /* RideCompare: sticky top summary bar */
+        .rc-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rc-topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .rc-route {
+            min-width: 0;
+        }
+
+        .rc-route-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #111827;
+            font-size: 14px;
+        }
+
+        .rc-route-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .rc-route-text {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 38vw;
+        }
+
+        .rc-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+        }
+
+        .rc-subline {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .rc-change-link {
+            background: transparent;
+            border: none;
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .rc-change-link:hover {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        /* Filter + sort row */
+        .rc-controls {
+            max-width: 1200px;
+            margin: 14px auto 0;
+            padding: 0 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .rc-chip-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .rc-chip {
+            border: 1px solid var(--border-color);
+            background: #fff;
+            color: #111827;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .rc-chip:hover {
+            border-color: rgba(17, 24, 39, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .rc-chip.active {
+            background: #111827;
+            color: #fff;
+            border-color: #111827;
+        }
+
+        .rc-sort {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rc-sort label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .rc-sort select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: inherit;
+            color: #111827;
+        }
+
+        /* Vehicle tabs (optional) */
+        .rc-vehicle-tabs {
+            max-width: 1200px;
+            margin: 12px auto 0;
+            padding: 0 16px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .rc-tab {
+            flex: 0 0 auto;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .rc-tab.active {
+            background: rgba(37, 99, 235, 0.10);
+            border-color: rgba(37, 99, 235, 0.35);
+            color: var(--primary-blue);
+        }
+
+        /* Main content */
+        .rc-content {
+            max-width: 1200px;
+            margin: 14px auto 24px;
+            padding: 0 16px 24px;
+        }
+
+        .rc-loading-note {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 600;
+            margin: 10px 0 14px;
+        }
+
+        /* Mobile cards */
+        .rc-cards {
+            display: grid;
+            gap: 12px;
+        }
+
+        .rc-card {
+            background: #fff;
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: var(--rc-radius);
+            box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rc-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(17, 24, 39, 0.08);
+            color: #111827;
+            border: 1px solid rgba(17, 24, 39, 0.10);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 11px;
+        }
+
+        .rc-row {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .rc-provider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .rc-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #fff;
+            flex: 0 0 auto;
+        }
+
+        .rc-logo.uber {
+            background: var(--rc-uber);
+        }
+
+        .rc-logo.ola {
+            background: var(--rc-ola);
+        }
+
+        .rc-logo.rapido {
+            background: var(--rc-rapido);
+        }
+
+        .rc-logo.namma {
+            background: var(--rc-namma);
+            color: #111827;
+        }
+
+        .rc-provider-meta {
+            min-width: 0;
+        }
+
+        .rc-provider-name {
+            font-weight: 900;
+            color: #111827;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .rc-vehicle {
+            margin-top: 2px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .rc-price {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: #111827;
+            line-height: 1.1;
+        }
+
+        .rc-price-sub {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+        .rc-eta {
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .rc-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+        }
+
+        .rc-book {
+            width: 100%;
+            padding: 12px 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .rc-book:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .rc-book.uber {
+            background: var(--rc-uber);
+            color: #fff;
+        }
+
+        .rc-book.ola {
+            background: var(--rc-ola);
+            color: #fff;
+        }
+
+        .rc-book.rapido {
+            background: var(--rc-rapido);
+            color: #fff;
+        }
+
+        .rc-book.namma {
+            background: var(--rc-namma);
+            color: #111827;
+        }
+
+        .rc-book-caption {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* Skeleton cards */
+        .rc-skeleton {
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: var(--rc-radius);
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(17, 24, 39, 0.04);
+            padding: 14px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .rc-skel-line {
+            height: 12px;
+            border-radius: 999px;
+            background: #eef2f7;
+        }
+
+        .rc-skel-line.w60 {
+            width: 60%;
+        }
+
+        .rc-skel-line.w40 {
+            width: 40%;
+        }
+
+        .rc-skel-line.w80 {
+            width: 80%;
+        }
+
+        .rc-skel-block {
+            height: 40px;
+            border-radius: 12px;
+            background: #eef2f7;
+        }
+
+        .rc-skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: rcShimmer 1.2s infinite;
+        }
+
+        @keyframes rcShimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Desktop table */
+        .rc-table-wrap {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(229, 231, 235, 0.9);
+            box-shadow: var(--shadow-md);
+        }
+
+        .rc-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .rc-table thead {
+            background: #111827;
+        }
+
+        .rc-table thead th {
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 800;
+        }
+
+        .rc-table tbody tr {
+            border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+        }
+
+        .rc-table tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+        }
+
+        .rc-table-price {
+            font-weight: 900;
+            color: #111827;
+            font-size: 18px;
+        }
+
+        .rc-table-sub {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .rc-empty {
+            background: #fff;
+            border: 1px dashed rgba(17, 24, 39, 0.2);
+            border-radius: 16px;
+            padding: 28px 16px;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .rc-empty .rc-empty-title {
+            color: #111827;
+            font-weight: 900;
+            margin-top: 12px;
+            font-size: 16px;
+        }
+
+        .rc-empty .rc-empty-sub {
+            margin-top: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .rc-empty-illus {
+            width: 92px;
+            height: 92px;
+            margin: 0 auto;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(139, 92, 246, 0.15));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        /* Bottom info bar (non-sticky) */
+        .rc-bottom {
+            max-width: 1200px;
+            margin: 18px auto 44px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .rc-bottom a,
+        .rc-bottom button {
+            color: var(--primary-blue);
+            font-weight: 800;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .rc-bottom a:hover,
+        .rc-bottom button:hover {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        /* Responsive switch: cards on mobile, table on desktop */
+        @media (min-width: 900px) {
+            .rc-cards {
+                display: none;
+            }
+
+            .rc-table-wrap {
+                display: block;
+            }
+
+            .rc-route-text {
+                max-width: 420px;
+            }
+        }
+
+        /* Keep old results styles (for compatibility) */
+        .header {
+            display: none;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .route-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .route-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .route-details {
+            flex: 1;
+        }
+
+        .route-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .route-text span {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .back-btn,
+        .export-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .back-btn:hover,
+        .export-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .controls-section {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+        }
+
+        .controls-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn,
+        .filter-btn {
+            padding: 10px 18px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .sort-btn:hover,
+        .filter-btn:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .sort-btn.active,
+        .filter-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .results-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+        }
+
+        thead th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 20px 16px;
+        }
+
+        .provider-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .provider-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+        }
+
+        .provider-logo.uber {
+            background: var(--rc-uber);
+        }
+
+        .provider-logo.ola {
+            background: var(--rc-ola);
+            color: #ffffff;
+        }
+
+        .provider-logo.rapido {
+            background: var(--rc-rapido);
+        }
+
+        .provider-logo.namma {
+            background: var(--rc-namma);
+            color: var(--text-dark);
+        }
+
+        .provider-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .vehicle-type {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .fare {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .eta {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 16px;
+        }
+
+        .rating span:last-child {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .book-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .book-btn.uber {
+            background: var(--uber-black);
+        }
+
+        .book-btn.ola {
+            background: var(--ola-yellow);
+            color: var(--text-dark);
+        }
+
+        .book-btn.rapido {
+            background: var(--rapido-red);
+        }
+
+        .book-btn.namma {
+            background: var(--namma-green);
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .custom-map-control {
+            background-color: white;
+            border: 0;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .custom-map-control:hover {
+            background-color: #f1f1f1;
+            color: var(--primary-blue);
+        }
+
+        /* ===== MAP MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-light);
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--text-dark);
+        }
+
+        #googleMap {
+            width: 100%;
+            height: 400px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .map-trigger-btn {
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .map-trigger-btn:hover {
+            border-color: var(--primary-blue);
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .selected-address-preview {
+            background: var(--bg-light);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .input-container {
+                padding: 30px 24px;
+            }
+
+            .logo h1 {
+                font-size: 26px;
+            }
+
+            /* Legacy results table responsiveness no longer needed for RideCompare */
+
+            .vehicle-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 22px;
+            }
+
+            .input-group input {
+                font-size: 14px;
+            }
+
+            .compare-btn {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Finding best rides...</div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE 1: INPUT SCREEN ===== -->
+    <div id="inputPage">
+        <div class="input-container">
+            <div class="logo">
+                <h1>🚗 FAREXO</h1>
+                <p>Your shortcut to the best ride price</p>
+            </div>
+
+            <form id="searchForm">
+                <div class="input-group">
+                    <label for="pickup">Pickup Location</label>
+                    <div class="input-row">
+                        <input type="text" id="pickup" placeholder="Enter pickup location" required>
+                        <button type="button" class="map-trigger-btn" data-target="pickup" title="Select on Map">
+                            📍
+                        </button>
+                    </div>
+                    <button type="button" id="useLocationBtn" class="location-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Use Current Location
+                    </button>
+                </div>
+
+                <div class="input-group">
+                    <label for="destination">Destination</label>
+                    <div class="input-row">
+                        <input type="text" id="destination" placeholder="Enter destination" required>
+                        <button type="button" class="map-trigger-btn" data-target="destination" title="Select on Map">
+                            📍
+                        </button>
+                    </div>
+                </div>
+
+                <div class="vehicle-selector">
+                    <label>Select Vehicle Type</label>
+                    <div class="vehicle-buttons">
+                        <button type="button" class="vehicle-btn active" data-vehicle="All">All</button>
+                        <button type="button" class="vehicle-btn" data-vehicle="Bike">Bike</button>
+                        <button type="button" class="vehicle-btn" data-vehicle="Auto">Auto</button>
+                        <button type="button" class="vehicle-btn" data-vehicle="Car">Car</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="compare-btn">Compare Rides</button>
+            </form>
+
+            <div class="recent-searches">
+                <h3>Recent Searches</h3>
+                <div id="recentSearchesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAP MODAL ===== -->
+    <div id="mapModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin-bottom: 4px;">Select Location</h3>
+                <p style="font-size: 13px; color: var(--text-light);">Drag the map to position the pin</p>
+            </div>
+
+            <div class="map-wrapper" style="position: relative;">
+                <div id="googleMap"></div>
+                <!-- Center Pin Overlay -->
+                <div class="center-pin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="#ef4444"
+                        stroke="#7f1d1d" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                        style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3" fill="white"></circle>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="selected-address-preview" id="addressPreview">
+                Move map to select location...
+            </div>
+
+            <button id="confirmLocationBtn" class="compare-btn">Set Location</button>
+        </div>
+    </div>
+
+    <!-- ===== PAGE 2: RESULTS SCREEN ===== -->
+    <div id="resultsPage">
+        <!-- Sticky top summary bar -->
+        <div class="rc-topbar" role="banner" aria-label="Route summary">
+            <div class="rc-topbar-inner">
+                <div class="rc-route">
+                    <div class="rc-route-line">
+                        <span class="rc-route-pill" title="From">
+                            <span class="rc-icon" aria-hidden="true">📍</span>
+                            <span id="fromLocation" class="rc-route-text">Pickup</span>
+                        </span>
+                        <span aria-hidden="true">→</span>
+                        <span class="rc-route-pill" title="To">
+                            <span class="rc-icon" aria-hidden="true">🏁</span>
+                            <span id="toLocation" class="rc-route-text">Destination</span>
+                        </span>
+                    </div>
+                    <div class="rc-subline">Selected mode: <span id="selectedModeText">All</span></div>
+                </div>
+
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button id="changeBtn" class="rc-change-link" type="button">Change</button>
+                    <button id="exportBtn" class="rc-change-link" type="button" title="Export current list to CSV">Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter + sort row -->
+        <div class="rc-controls" aria-label="Filter and sort">
+            <div class="rc-chip-row" role="tablist" aria-label="Quick filters">
+                <button class="rc-chip active" type="button" data-chip="all">All</button>
+                <button class="rc-chip" type="button" data-chip="cheapest">Cheapest</button>
+                <button class="rc-chip" type="button" data-chip="fastest">Fastest</button>
+                <button class="rc-chip" type="button" data-chip="bestRated">Best Rated</button>
+            </div>
+
+            <div class="rc-sort">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect">
+                    <option value="price" selected>Price (Low to High)</option>
+                    <option value="eta">ETA (Fastest)</option>
+                    <option value="rating">Rating (High to Low)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Vehicle tabs -->
+        <div class="rc-vehicle-tabs" aria-label="Vehicle tabs">
+            <button class="rc-tab active" type="button" data-vehicle-tab="all">All</button>
+            <button class="rc-tab" type="button" data-vehicle-tab="Auto">Auto</button>
+            <button class="rc-tab" type="button" data-vehicle-tab="Bike">Bike</button>
+            <button class="rc-tab" type="button" data-vehicle-tab="Car">Car</button>
+            <button class="rc-tab" type="button" data-vehicle-tab="SUV">SUV</button>
+        </div>
+
+        <div class="rc-content">
+            <div id="rcLoadingNote" class="rc-loading-note" style="display:none;">
+                Fetching latest fares from Uber, Ola, Rapido, Namma Yatri…
+            </div>
+
+            <!-- Mobile cards -->
+            <div id="rcCards" class="rc-cards" aria-label="Fare comparison cards">
+                <!-- Cards injected here -->
+            </div>
+
+            <!-- Desktop table -->
+            <div id="rcTableWrap" class="rc-table-wrap" aria-label="Fare comparison table">
+                <table class="rc-table">
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Vehicle</th>
+                            <th>Fare</th>
+                            <th>ETA</th>
+                            <th>Rating</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="rcEmptyState" class="rc-empty" style="display:none;">
+                <div class="rc-empty-illus" aria-hidden="true">🛺</div>
+                <div class="rc-empty-title">No rides available for this mode right now.</div>
+                <div class="rc-empty-sub">Try switching vehicle type or changing pickup/drop.</div>
+            </div>
+
+            <div class="rc-bottom">
+                <div>All fares are estimates. Final fare may differ in the provider app.</div>
+                <button id="viewPreviousSearchesBtn" type="button">View previous searches</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "AIzaSyD4aeA_aF2j1wMJ43l8AQgRY-stFFkYM4A",
+            v: "weekly",
+        });
+    </script>
+    <script>
+        // ===== GOOGLE MAPS API KEY =====
+        // ===== GOOGLE MAPS API KEY =====
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyD4aeA_aF2j1wMJ43l8AQgRY-stFFkYM4A';
+
+        // ===== STATE MANAGEMENT =====
+        let currentVehicleType = 'All';
+        let currentSearchData = {};
+        let allRides = [];
+        let filteredRides = [];
+        let currentSort = 'price';
+        let currentFilter = 'all'; // legacy vehicle filter
+        let currentQuickFilter = 'all'; // all | cheapest | fastest | bestRated
+        let isFetchingFares = false;
+
+        // ===== VEHICLE SELECTION =====
+        document.querySelectorAll('.vehicle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.vehicle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentVehicleType = btn.dataset.vehicle;
+            });
+        });
+
+        // ===== GEOLOCATION & GOOGLE MAPS API =====
+        document.getElementById('useLocationBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('useLocationBtn');
+            const pickupInput = document.getElementById('pickup');
+
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                return;
+            }
+
+            // Check if API key is set
+            if (GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
+                alert('Please add your Google Maps API key in the script section');
+                return;
+            }
+
+            // Disable button and show loading state
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Getting Location...
+            `;
+
+            try {
+                // Get user's current position
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    });
+                });
+
+                const { latitude, longitude } = position.coords;
+
+                // Use Google Maps Javascript SDK Geocoding Service
+                const { Geocoder } = await google.maps.importLibrary("geocoding");
+                const geocoder = new Geocoder();
+
+                const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
+
+                if (response.results && response.results.length > 0) {
+                    // Get the formatted address
+                    const address = response.results[0].formatted_address;
+                    pickupInput.value = address;
+
+                    // Success state
+                    btn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Location Set!
+                    `;
+
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Use Current Location
+                        `;
+                    }, 2000);
+                } else {
+                    throw new Error('Could not retrieve address from coordinates');
+                }
+
+            } catch (error) {
+                console.error('Location error:', error);
+
+                let errorMessage = 'Could not get your location. ';
+                if (error.code === 1) {
+                    errorMessage += 'Please enable location permissions.';
+                } else if (error.code === 2) {
+                    errorMessage += 'Location unavailable.';
+                } else if (error.code === 3) {
+                    errorMessage += 'Request timeout.';
+                } else {
+                    errorMessage += error.message || 'Please try again.';
+                }
+
+                alert(errorMessage);
+
+                // Reset button
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Use Current Location
+                `;
+            }
+        });
+
+        // ===== RECENT SEARCHES =====
+        function loadRecentSearches() {
+            const searches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            const container = document.getElementById('recentSearchesList');
+
+            if (searches.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-light); font-size: 13px; text-align: center; padding: 20px 0;">No recent searches</p>';
+                return;
+            }
+
+            container.innerHTML = searches.slice(0, 3).map((search, index) => `
+                <div class="recent-item" data-index="${index}">
+                    <div class="recent-item-content">
+                        <div class="recent-item-route">${search.pickup} → ${search.destination}</div>
+                        <div class="recent-item-vehicle">${search.vehicleType}</div>
+                    </div>
+                    <button class="recent-item-delete" onclick="deleteRecentSearch(${index})">×</button>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.recent-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('recent-item-delete')) return;
+                    const search = searches[item.dataset.index];
+                    document.getElementById('pickup').value = search.pickup;
+                    document.getElementById('destination').value = search.destination;
+
+                    document.querySelectorAll('.vehicle-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.vehicle === search.vehicleType);
+                    });
+                    currentVehicleType = search.vehicleType;
+                });
+            });
+        }
+
+        function saveRecentSearch(pickup, destination, vehicleType) {
+            let searches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            const newSearch = { pickup, destination, vehicleType, timestamp: Date.now() };
+
+            searches = searches.filter(s => !(s.pickup === pickup && s.destination === destination));
+            searches.unshift(newSearch);
+            searches = searches.slice(0, 5);
+
+            localStorage.setItem('recentSearches', JSON.stringify(searches));
+        }
+
+        function deleteRecentSearch(index) {
+            let searches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            searches.splice(index, 1);
+            localStorage.setItem('recentSearches', JSON.stringify(searches));
+            loadRecentSearches();
+        }
+
+        // ===== FARE GENERATION =====
+        const providers = [
+            { name: 'Uber', class: 'uber', vehicles: ['Bike', 'Auto', 'Sedan', 'SUV'], priceMultiplier: 1.0 },
+            { name: 'Ola', class: 'ola', vehicles: ['Bike', 'Auto', 'Sedan', 'SUV'], priceMultiplier: 0.95 },
+            { name: 'Rapido', class: 'rapido', vehicles: ['Bike', 'Auto'], priceMultiplier: 0.85 },
+            { name: 'Namma Yatri', class: 'namma', vehicles: ['Auto'], priceMultiplier: 0.90 }
+        ];
+
+        const vehicleBasePrices = {
+            'Bike': 80,
+            'Auto': 120,
+            'Sedan': 200,
+            'SUV': 280
+        };
+
+        function generateFares(pickup, destination, vehicleType) {
+            const rides = [];
+            const surge = 1.0 + (Math.random() * 0.3); // 1.0-1.3x surge
+
+            providers.forEach(provider => {
+                let vehiclesToShow = provider.vehicles;
+
+                if (vehicleType !== 'All') {
+                    if (vehicleType === 'Car') {
+                        vehiclesToShow = provider.vehicles.filter(v => v === 'Sedan' || v === 'SUV');
+                    } else {
+                        vehiclesToShow = provider.vehicles.filter(v => v === vehicleType);
+                    }
+                }
+
+                vehiclesToShow.forEach(vehicle => {
+                    const basePrice = vehicleBasePrices[vehicle];
+                    const randomFactor = 0.9 + Math.random() * 0.2; // ±10%
+                    const fare = Math.round(basePrice * provider.priceMultiplier * surge * randomFactor);
+                    const eta = Math.round(3 + Math.random() * 7); // 3-10 min
+                    const rating = (4.5 + Math.random() * 0.4).toFixed(1); // 4.5-4.9
+
+                    rides.push({
+                        provider: provider.name,
+                        providerClass: provider.class,
+                        vehicle: vehicle,
+                        fare: fare,
+                        eta: eta,
+                        rating: parseFloat(rating)
+                    });
+                });
+            });
+
+            return rides;
+        }
+
+        // ===== DEEP LINKING =====
+        function generateDeepLink(provider, pickup, destination) {
+            const pickupEncoded = encodeURIComponent(pickup);
+            const destEncoded = encodeURIComponent(destination);
+
+            const links = {
+                'Uber': `https://m.uber.com/ul/?action=setPickup&pickup[formatted_address]=${pickupEncoded}&dropoff[formatted_address]=${destEncoded}`,
+                'Ola': `https://book.olacabs.com/?pickup=${pickupEncoded}&drop=${destEncoded}`,
+                'Rapido': `https://www.rapido.bike/`,
+                'Namma Yatri': `https://nammayatri.in/`
+            };
+
+            return links[provider] || '#';
+        }
+
+        function bookRide(provider, pickup, destination) {
+            const deepLink = generateDeepLink(provider, pickup, destination);
+            window.open(deepLink, '_blank');
+        }
+
+        // ===== FORM SUBMISSION =====
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const pickup = document.getElementById('pickup').value.trim();
+            const destination = document.getElementById('destination').value.trim();
+
+            if (!pickup || !destination) {
+                alert('Please enter both pickup and destination locations');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingOverlay').classList.add('active');
+            setResultsLoading(true);
+
+            // Save to recent searches
+            saveRecentSearch(pickup, destination, currentVehicleType);
+
+            // Simulate API delay
+            setTimeout(() => {
+                currentSearchData = { pickup, destination, vehicleType: currentVehicleType };
+                allRides = generateFares(pickup, destination, currentVehicleType);
+                filteredRides = [...allRides];
+                currentQuickFilter = 'all';
+
+                // Sort by price initially
+                sortRides('price');
+
+                // Update UI
+                document.getElementById('fromLocation').textContent = pickup;
+                document.getElementById('toLocation').textContent = destination;
+                document.getElementById('selectedModeText').textContent = currentVehicleType;
+
+                // Switch pages
+                document.getElementById('inputPage').style.display = 'none';
+                document.getElementById('resultsPage').style.display = 'block';
+                document.getElementById('loadingOverlay').classList.remove('active');
+                setResultsLoading(false);
+
+                renderResults();
+            }, 1500);
+        });
+
+        // ===== SORTING =====
+        function sortRides(sortBy) {
+            currentSort = sortBy;
+
+            filteredRides.sort((a, b) => {
+                if (sortBy === 'price') return a.fare - b.fare;
+                if (sortBy === 'eta') return a.eta - b.eta;
+                if (sortBy === 'rating') return b.rating - a.rating;
+                return 0;
+            });
+
+            renderResults();
+        }
+
+        // RideCompare: sort dropdown
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', () => {
+                sortRides(sortSelect.value);
+            });
+        }
+
+        // ===== FILTERING =====
+        function filterRides(filterType) {
+            currentFilter = filterType;
+
+            if (filterType === 'all') {
+                filteredRides = [...allRides];
+            } else if (filterType === 'Car') {
+                filteredRides = allRides.filter(ride => ride.vehicle === 'Sedan' || ride.vehicle === 'SUV');
+            } else if (filterType === 'SUV') {
+                filteredRides = allRides.filter(ride => ride.vehicle === 'SUV');
+            } else {
+                filteredRides = allRides.filter(ride => ride.vehicle === filterType);
+            }
+
+            applyQuickFilter(currentQuickFilter, { skipVehicle: true });
+            sortRides(currentSort);
+        }
+
+        // RideCompare: vehicle tabs
+        document.querySelectorAll('.rc-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.rc-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const v = tab.dataset.vehicleTab;
+                if (v === 'all') filterRides('all');
+                else filterRides(v);
+            });
+        });
+
+        // RideCompare: quick filter chips
+        document.querySelectorAll('.rc-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.rc-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentQuickFilter = chip.dataset.chip;
+                applyQuickFilter(currentQuickFilter);
+                sortRides(currentSort);
+            });
+        });
+
+        function applyQuickFilter(quick, opts = {}) {
+            // quick filter works on current vehicle-filtered list unless skipVehicle
+            let base = opts.skipVehicle ? [...filteredRides] : [...filteredRides];
+            if (quick === 'all') {
+                filteredRides = base;
+                return;
+            }
+            if (base.length === 0) {
+                filteredRides = base;
+                return;
+            }
+            if (quick === 'cheapest') {
+                const minFare = Math.min(...base.map(r => r.fare));
+                filteredRides = base.filter(r => r.fare === minFare);
+                return;
+            }
+            if (quick === 'fastest') {
+                const minEta = Math.min(...base.map(r => r.eta));
+                filteredRides = base.filter(r => r.eta === minEta);
+                return;
+            }
+            if (quick === 'bestRated') {
+                const maxRating = Math.max(...base.map(r => r.rating));
+                filteredRides = base.filter(r => r.rating === maxRating);
+                return;
+            }
+            filteredRides = base;
+        }
+
+        function setResultsLoading(isLoading) {
+            isFetchingFares = isLoading;
+            const note = document.getElementById('rcLoadingNote');
+            const cards = document.getElementById('rcCards');
+            const tbody = document.getElementById('resultsTableBody');
+            const empty = document.getElementById('rcEmptyState');
+
+            if (!note || !cards || !tbody || !empty) return;
+
+            note.style.display = isLoading ? 'block' : 'none';
+            empty.style.display = 'none';
+
+            if (isLoading) {
+                // Skeletons for mobile
+                cards.innerHTML = Array.from({ length: 4 }).map(() => `
+                    <div class="rc-skeleton" aria-hidden="true">
+                        <div style="display:flex; gap:12px; align-items:center; margin-bottom: 12px;">
+                            <div class="rc-skel-block" style="width:40px; height:40px; border-radius: 12px;"></div>
+                            <div style="flex:1;">
+                                <div class="rc-skel-line w60"></div>
+                                <div style="height:8px;"></div>
+                                <div class="rc-skel-line w40"></div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div style="flex:1;">
+                                <div class="rc-skel-line w80" style="height:16px; border-radius: 10px;"></div>
+                                <div style="height:8px;"></div>
+                                <div class="rc-skel-line w40"></div>
+                            </div>
+                            <div style="width:44%;">
+                                <div class="rc-skel-block"></div>
+                                <div style="height:8px;"></div>
+                                <div class="rc-skel-line w80"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Skeleton row for desktop
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 18px 16px;">
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <div style="width:44px; height:44px; border-radius: 14px; background:#eef2f7;"></div>
+                                <div style="flex:1;">
+                                    <div style="height:12px; width:220px; border-radius:999px; background:#eef2f7;"></div>
+                                    <div style="height:8px;"></div>
+                                    <div style="height:12px; width:140px; border-radius:999px; background:#eef2f7;"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                // content will be rendered by renderResults()
+            }
+        }
+
+        // ===== RENDER RESULTS =====
+        function renderResults() {
+            const tbody = document.getElementById('resultsTableBody');
+            const cards = document.getElementById('rcCards');
+            const empty = document.getElementById('rcEmptyState');
+
+            if (!tbody || !cards || !empty) return;
+            if (isFetchingFares) return;
+
+            if (filteredRides.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 18px 16px; color: var(--text-light); font-weight: 700;">
+                            No rides available for this mode right now.
+                        </td>
+                    </tr>
+                `;
+                cards.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+
+            // Tag logic (pills)
+            const cheapestOverallFare = Math.min(...allRides.map(r => r.fare));
+            const fastestOverallEta = Math.min(...allRides.map(r => r.eta));
+            const bestOverallRating = Math.max(...allRides.map(r => r.rating));
+            const cheapestUberFare = (() => {
+                const uber = allRides.filter(r => r.provider === 'Uber');
+                return uber.length ? Math.min(...uber.map(r => r.fare)) : null;
+            })();
+
+            function formatVehicleLabel(ride) {
+                // match examples: show provider-specific naming lightly
+                if (ride.provider === 'Uber' && ride.vehicle === 'Sedan') return 'Uber Go (Car)';
+                if (ride.provider === 'Ola' && ride.vehicle === 'Auto') return 'Ola Auto';
+                if (ride.provider === 'Rapido' && ride.vehicle === 'Bike') return 'Rapido Bike';
+                if (ride.provider === 'Namma Yatri' && ride.vehicle === 'Auto') return 'Namma Yatri Auto';
+                if (ride.vehicle === 'Sedan') return 'Sedan (Car)';
+                return ride.vehicle;
+            }
+
+            function tagForRide(ride) {
+                // Example-aligned tags, derived from generated data
+                if (ride.provider === 'Uber' && cheapestUberFare !== null && ride.fare === cheapestUberFare) return 'Cheapest Uber';
+                if (ride.provider === 'Ola' && ride.fare === cheapestOverallFare) return 'Recommended';
+                if (ride.eta === fastestOverallEta) return 'Fastest';
+                if (ride.rating === bestOverallRating) return 'Best Rated';
+                if (ride.fare === cheapestOverallFare) return 'Cheapest';
+                return '';
+            }
+
+            function bookLabel(provider) {
+                return `Book on ${provider}`;
+            }
+
+            tbody.innerHTML = filteredRides.map(ride => `
+                <tr>
+                    <td>
+                        <div class="provider-cell">
+                            <div class="provider-logo ${ride.providerClass}">
+                                ${ride.provider.charAt(0)}
+                            </div>
+                            <span class="provider-name">${ride.provider}</span>
+                        </div>
+                    </td>
+                    <td class="vehicle-type">${formatVehicleLabel(ride)}</td>
+                    <td>
+                        <div class="rc-table-price">₹${ride.fare}</div>
+                        <div class="rc-table-sub">Estimated fare</div>
+                    </td>
+                    <td class="eta">ETA: ${ride.eta} min</td>
+                    <td>
+                        <div class="rating">
+                            <span class="stars">★</span>
+                            <span>${ride.rating}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button 
+                            class="rc-book ${ride.providerClass}" 
+                            onclick="bookRide('${ride.provider}', '${currentSearchData.pickup}', '${currentSearchData.destination}')"
+                        >
+                            ${bookLabel(ride.provider)}
+                        </button>
+                        <div class="rc-book-caption">Opens official app to complete payment</div>
+                    </td>
+                </tr>
+            `).join('');
+
+            cards.innerHTML = filteredRides.map(ride => {
+                const tag = tagForRide(ride);
+                return `
+                    <div class="rc-card">
+                        ${tag ? `<div class="rc-tag">${tag}</div>` : ``}
+                        <div class="rc-row">
+                            <div>
+                                <div class="rc-provider">
+                                    <div class="rc-logo ${ride.providerClass}">${ride.provider.charAt(0)}</div>
+                                    <div class="rc-provider-meta">
+                                        <div class="rc-provider-name">${ride.provider}</div>
+                                        <div class="rc-vehicle">${formatVehicleLabel(ride)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="rc-price">₹${ride.fare}</div>
+                                <div class="rc-price-sub">Estimated fare</div>
+                                <div class="rc-eta">ETA: ${ride.eta} min</div>
+                            </div>
+                        </div>
+                        <div style="height: 12px;"></div>
+                        <div class="rc-actions">
+                            <button class="rc-book ${ride.providerClass}"
+                                onclick="bookRide('${ride.provider}', '${currentSearchData.pickup}', '${currentSearchData.destination}')"
+                            >${bookLabel(ride.provider)}</button>
+                            <div class="rc-book-caption">Opens official app to complete payment</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== BACK BUTTON =====
+        function goBackToInput() {
+            document.getElementById('resultsPage').style.display = 'none';
+            document.getElementById('inputPage').style.display = 'flex';
+            loadRecentSearches();
+        }
+
+        // RideCompare: Change link
+        const changeBtn = document.getElementById('changeBtn');
+        if (changeBtn) changeBtn.addEventListener('click', goBackToInput);
+
+        // Also wire old back button if present (compat)
+        const legacyBack = document.getElementById('backBtn');
+        if (legacyBack) legacyBack.addEventListener('click', goBackToInput);
+
+        // Bottom link: previous searches
+        const viewPreviousSearchesBtn = document.getElementById('viewPreviousSearchesBtn');
+        if (viewPreviousSearchesBtn) {
+            viewPreviousSearchesBtn.addEventListener('click', () => {
+                goBackToInput();
+                const recent = document.querySelector('.recent-searches');
+                if (recent) recent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        // ===== CSV EXPORT =====
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (filteredRides.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            const csvContent = [
+                ['Provider', 'Vehicle', 'Fare (₹)', 'ETA (min)', 'Rating'],
+                ...filteredRides.map(ride => [
+                    ride.provider,
+                    ride.vehicle,
+                    ride.fare,
+                    ride.eta,
+                    ride.rating
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `farexo-${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // ===== INITIALIZATION =====
+        loadRecentSearches();
+        initAutocomplete();
+
+        // ===== AUTOCOMPLETE LOGIC =====
+        async function initAutocomplete() {
+            const { Autocomplete } = await google.maps.importLibrary("places");
+
+            const pickupInput = document.getElementById("pickup");
+            const destinationInput = document.getElementById("destination");
+
+            const options = {
+                fields: ["formatted_address", "geometry", "name"],
+                strictBounds: false,
+            };
+
+            const pickupAutocomplete = new Autocomplete(pickupInput, options);
+            const destinationAutocomplete = new Autocomplete(destinationInput, options);
+
+            // Bias towards user's current location if available
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const circle = new google.maps.Circle({
+                        center: {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        },
+                        radius: 50000, // 50km
+                    });
+                    pickupAutocomplete.setBounds(circle.getBounds());
+                    destinationAutocomplete.setBounds(circle.getBounds());
+                });
+            }
+        }
+
+        // ===== MAP MODAL LOGIC =====
+        let map;
+        let activeInputId = null;
+        let currentMapCenterAddress = '';
+        let mapInitialized = false;
+
+        async function initMap() {
+            if (mapInitialized) return;
+
+            const { Map } = await google.maps.importLibrary("maps");
+            const { Geocoder } = await google.maps.importLibrary("geocoding");
+
+            // Default center (Bangalore)
+            let defaultCenter = { lat: 12.9716, lng: 77.5946 };
+
+            map = new Map(document.getElementById("googleMap"), {
+                center: defaultCenter,
+                zoom: 15,
+                disableDefaultUI: false,
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false
+            });
+
+            // Create custom "Locate Me" control
+            const locationButton = document.createElement("button");
+            locationButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+            `;
+            locationButton.classList.add("custom-map-control");
+            locationButton.title = "Pan to Current Location";
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
+
+            // "Locate Me" click handler
+            locationButton.addEventListener("click", () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                            };
+                            map.setCenter(pos);
+                            map.setZoom(17);
+                        },
+                        () => {
+                            alert("Could not access your location. Please check browser permissions.");
+                        },
+                        { enableHighAccuracy: true }
+                    );
+                } else {
+                    alert("Geolocation is not supported by your browser");
+                }
+            });
+
+            // Attempt to get location automatically on first load
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        };
+                        map.setCenter(pos);
+                    },
+                    (error) => {
+                        console.log("Auto-location failed (likely permission denied), sticking to default.");
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            }
+
+            // Map Idle Listener (Geocode on drag end)
+            map.addListener("idle", async () => {
+                const center = map.getCenter();
+                const geocoder = new Geocoder();
+
+                document.getElementById('addressPreview').innerHTML = '<i>Locating...</i>';
+                document.getElementById('confirmLocationBtn').disabled = true;
+
+                try {
+                    const response = await geocoder.geocode({ location: { lat: center.lat(), lng: center.lng() } });
+                    if (response.results && response.results.length > 0) {
+                        currentMapCenterAddress = response.results[0].formatted_address;
+                        document.getElementById('addressPreview').textContent = currentMapCenterAddress;
+                        document.getElementById('confirmLocationBtn').disabled = false;
+                    }
+                } catch (e) {
+                    document.getElementById('addressPreview').textContent = "Could not fetch address. Try moving map slightly.";
+                }
+            });
+
+            mapInitialized = true;
+        }
+
+        // Modal Helpers
+        const modal = document.getElementById('mapModal');
+        const closeModal = document.getElementsByClassName('close-modal')[0];
+
+        async function openModal(inputId) {
+            activeInputId = inputId;
+            modal.classList.add('active');
+
+            if (!mapInitialized) {
+                await initMap();
+            } else {
+                google.maps.event.trigger(map, 'resize');
+            }
+
+            // Sync with existing input value
+            const currentVal = document.getElementById(inputId).value;
+            if (currentVal && currentVal.length > 5) { // Basic check to ignore short random text
+                const { Geocoder } = await google.maps.importLibrary("geocoding");
+                const geocoder = new Geocoder();
+
+                try {
+                    const response = await geocoder.geocode({ address: currentVal });
+                    if (response.results && response.results.length > 0) {
+                        map.setCenter(response.results[0].geometry.location);
+                        map.setZoom(17);
+                    }
+                } catch (e) {
+                    console.log("Could not find location for input string");
+                }
+            }
+        }
+
+        closeModal.onclick = () => modal.classList.remove('active');
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Trigger Buttons
+        document.querySelectorAll('.map-trigger-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = btn.getAttribute('data-target');
+                openModal(target);
+            });
+        });
+
+        // Confirm Button
+        document.getElementById('confirmLocationBtn').addEventListener('click', () => {
+            if (activeInputId && currentMapCenterAddress) {
+                document.getElementById(activeInputId).value = currentMapCenterAddress;
+                modal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>
