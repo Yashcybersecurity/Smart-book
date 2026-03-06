@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '../context/AuthContext';
 import { useGeolocation, usePlacesAutocomplete, geocodeAddress } from '../hooks/useAppHooks';
 import MapPicker from './MapPicker';
 
@@ -10,7 +10,7 @@ import MapPicker from './MapPicker';
  * On submit, fires onSearch({ pickup, dropoff }) with coords + address.
  */
 export default function SearchForm({ onSearch }) {
-  const { data: session, status } = useSession();
+  const { user, userData, signOut } = useAuth();
   const { coords: geoCoords, loading: geoLoading } = useGeolocation();
 
   const [pickup, setPickup] = useState({ address: '', lat: null, lng: null });
@@ -153,14 +153,16 @@ export default function SearchForm({ onSearch }) {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          {status === 'authenticated' && session?.user ? (
+          {user ? (
             <div className="search-form__user-info">
-              <img
-                src={session.user.image}
-                alt={session.user.name}
-                className="search-form__user-avatar"
-              />
-              <span className="search-form__user-name">{session.user.name}</span>
+              {user.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt={userData?.displayName || user.email}
+                  className="search-form__user-avatar"
+                />
+              )}
+              <span className="search-form__user-name">{userData?.displayName || user.email}</span>
               <button
                 onClick={() => signOut()}
                 className="search-form__logout-btn"

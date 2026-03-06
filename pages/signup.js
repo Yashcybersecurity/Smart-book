@@ -1,26 +1,24 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth';
 import Link from 'next/link';
 import { auth } from '../lib/firebaseClient';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const redirectTo =
-    router.query.from && !String(router.query.from).startsWith('/login')
-      ? router.query.from
-      : '/dashboard';
-
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function afterAuth(firebaseUser) {
+  async function afterAuth(firebaseUser, name = '') {
     const token = await firebaseUser.getIdToken();
 
     await fetch('/api/auth/session', {
@@ -35,43 +33,40 @@ export default function LoginPage() {
       body: JSON.stringify({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: firebaseUser.displayName || '',
+        displayName: name || firebaseUser.displayName || '',
         photoURL: firebaseUser.photoURL || '',
+        phoneNumber: phone || '',
       }),
     });
 
-    const meRes = await fetch('/api/user/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const meData = await meRes.json();
-
-    if (meData.user && !meData.user.homeState) {
-      router.push('/onboarding');
-    } else {
-      router.push(redirectTo);
-    }
+    router.push('/onboarding');
   }
 
-  const handleEmailLogin = async (e) => {
+  const handleEmailSignup = async (e) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      await afterAuth(result.user);
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(result.user, { displayName: fullName });
+      await afterAuth(result.user, fullName);
     } catch (err) {
       setError(getErrorMessage(err.code));
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignup = async () => {
     setError('');
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      await afterAuth(result.user);
+      await afterAuth(result.user, result.user.displayName || '');
     } catch (err) {
       setError(getErrorMessage(err.code));
       setLoading(false);
@@ -82,15 +77,27 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">🚕 FAREXO</div>
-        <p className="auth-tagline">Compare rides across Uber, Ola, Rapido &amp; more</p>
+        <p className="auth-tagline">Create your account</p>
 
         {error && <div className="auth-error" role="alert">{error}</div>}
 
-        <form onSubmit={handleEmailLogin} className="auth-form">
+        <form onSubmit={handleEmailSignup} className="auth-form">
           <div className="auth-field">
-            <label htmlFor="login-email">Email</label>
+            <label htmlFor="signup-name">Full Name</label>
             <input
-              id="login-email"
+              id="signup-name"
+              type="text"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              placeholder="Rohit Sharma"
+              required
+              autoComplete="name"
+            />
+          </div>
+          <div className="auth-field">
+            <label htmlFor="signup-email">Email</label>
+            <input
+              id="signup-email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -100,32 +107,43 @@ export default function LoginPage() {
             />
           </div>
           <div className="auth-field">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="signup-phone">Phone Number</label>
             <input
-              id="login-password"
+              id="signup-phone"
+              type="tel"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="+91 98765 43210"
+              autoComplete="tel"
+            />
+          </div>
+          <div className="auth-field">
+            <label htmlFor="signup-password">Password</label>
+            <input
+              id="signup-password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Min. 6 characters"
               required
-              autoComplete="current-password"
+              autoComplete="new-password"
             />
           </div>
           <button type="submit" className="auth-btn-primary" disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign In'}
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
 
         <div className="auth-divider"><span>or</span></div>
 
-        <button onClick={handleGoogleLogin} className="auth-btn-google" disabled={loading}>
+        <button onClick={handleGoogleSignup} className="auth-btn-google" disabled={loading}>
           <GoogleIcon />
-          Continue with Google
+          Sign up with Google
         </button>
 
         <p className="auth-footer">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup">Create one</Link>
+          Already have an account?{' '}
+          <Link href="/login">Sign in</Link>
         </p>
       </div>
     </div>
@@ -145,13 +163,10 @@ function GoogleIcon() {
 
 function getErrorMessage(code) {
   const map = {
-    'auth/user-not-found': 'No account found with this email.',
-    'auth/wrong-password': 'Incorrect password.',
+    'auth/email-already-in-use': 'An account with this email already exists.',
     'auth/invalid-email': 'Invalid email address.',
-    'auth/too-many-requests': 'Too many attempts. Please try again later.',
-    'auth/invalid-credential': 'Invalid email or password.',
-    'auth/user-disabled': 'This account has been disabled.',
-    'auth/popup-closed-by-user': 'Sign-in popup was closed.',
+    'auth/weak-password': 'Password is too weak.',
+    'auth/popup-closed-by-user': 'Sign-up popup was closed.',
   };
-  return map[code] || 'Sign in failed. Please try again.';
+  return map[code] || 'Sign up failed. Please try again.';
 }
