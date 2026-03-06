@@ -1,3 +1,0 @@
-# controllers
-
-API controller implementations.

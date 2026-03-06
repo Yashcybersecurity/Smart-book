@@ -1,3 +1,0 @@
-# routes
-
-Express route definitions.

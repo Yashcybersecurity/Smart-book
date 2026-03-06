@@ -1,3 +1,0 @@
-# middleware
-
-Custom Express middleware.
